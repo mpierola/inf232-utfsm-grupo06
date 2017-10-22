@@ -1,0 +1,14 @@
+---
+- hosts: slave 
+  vars: 
+    directory: /srv/cert
+  
+  tasks:
+    - name: Copy TLS certificates
+      copy: src=cert/ dest={{ directory }}
+    
+    - name: Restore context SElinux part1
+      command: semanage fcontext -a -t httpd_config_t "/srv/cert(/.*)?"
+
+    - name: Restore context SElinux part2
+      command: restorecon -Rv /srv/cert/

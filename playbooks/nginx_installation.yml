@@ -1,0 +1,28 @@
+---
+- hosts: slave
+  tasks:
+    - name: Add nginx repo
+      yum_repository:
+        name: nginx
+        description: NGINX repo
+        baseurl: http://nginx.org/packages/centos/$releasever/$basearch/
+        gpgcheck: no
+        enabled: yes
+    
+    - name: yum clean metadata
+      command: yum clean metadata
+      args:
+        warn: no
+    
+    - name: Install nginx
+      yum:
+        name: nginx
+        state: latest
+      
+    - name: Start nginx
+      systemd: state=started name=nginx
+    
+    - name: Enable nginx
+      systemd:
+        name: nginx
+        enabled: yes

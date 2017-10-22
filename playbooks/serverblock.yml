@@ -1,0 +1,34 @@
+---
+- hosts: slave
+
+  vars:
+    document_root: /srv/www/opencart
+    cert: /srv/cert/fullchain.pem
+    chain: /srv/cert/chain.pem
+    privkey: /srv/cert/privkey.pem
+    hostname: grupo06.mosorio.me
+
+  tasks:
+    - name: Install rsync
+      yum: 
+        name: rsync
+        state: latest
+
+    - name: Create Document Root
+      file: path={{ document_root }} state=directory mode=0750 owner=nginx group=nginx
+
+    - name: Set up Document Root
+      synchronize: src=opencart/ dest={{ document_root }}
+
+    - name: Configure Serverblock
+      template: src=serverblock.tpl dest=/etc/nginx/conf.d/opencart.conf
+      notify: Restart nginx
+
+    - name: Restore context SElinux
+      command: restorecon -Rv {{ document_root }}
+
+  handlers:
+    - name: Restart nginx
+      systemd: 
+        state: restarted
+        name: nginx

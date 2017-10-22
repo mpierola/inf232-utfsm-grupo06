@@ -1,0 +1,19 @@
+---
+- hosts: slave
+  tasks:
+    - name: Download ius repo
+      get_url:
+        url: https://centos7.iuscommunity.org/ius-release.rpm
+        dest: /ius-release.rpm
+    
+    - name: Install ius repo
+      yum:
+        name: /ius-release.rpm
+        state: present
+        disable_gpg_check: yes
+
+    - name: Install php-fpm
+      yum:
+        name: php56u-fpm
+        state: latest
+        update_cache: yes
