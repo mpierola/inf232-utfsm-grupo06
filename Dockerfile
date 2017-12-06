@@ -27,7 +27,8 @@ RUN set -ex \
                     | sort -u \
     )" \
     && apk add --virtual .python-rundeps $runDeps \
-    && apk del .build-deps
+    && apk del .build-deps \
+    && apk add --no-cache --virtual .build-deps postgresql-client
 
 # Copy your application code to the container (make sure you create a .dockerignore file if any large files or directories should be excluded)
 RUN mkdir /code/
@@ -47,5 +48,7 @@ ENV UWSGI_VIRTUALENV=/venv UWSGI_WSGI_FILE=mysite/wsgi.py UWSGI_HTTP=:8000 UWSGI
 RUN DATABASE_URL=none /venv/bin/python manage.py collectstatic --noinput
 
 # Start uWSGI
+ENTRYPOINT ["/code/docker-entrypoint.sh"]
+
 CMD ["/venv/bin/uwsgi", "--http-auto-chunked", "--http-keepalive"]
 
