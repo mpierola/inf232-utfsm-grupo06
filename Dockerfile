@@ -1,4 +1,4 @@
-FROM python:2.7-alpine
+FROM python:rc-alpine
 
 # Copy in your requirements file
 ADD requirements.txt /requirements.txt
