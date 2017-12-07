@@ -5,14 +5,14 @@ services:
     environment:
       POSTGRES_DB: app_db
       POSTGRES_USER: app_user
-      POSTGRES_PASSWORD: asdf1234
+      POSTGRES_PASSWORD: changeme
     restart: always
     image: postgres:9.6
     expose:
       - "5432"
   app:
     environment:
-      DATABASE_URL: postgres://app_user:asdf1234@db/app_db
+      DATABASE_URL: postgres://app_user:changeme@db/app_db
       DJANGO_MANAGEPY_MIGRATE: "on"
     build:
       context: .
