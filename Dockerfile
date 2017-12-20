@@ -1,5 +1,10 @@
 FROM python:3.5-alpine
-
+ARG ACCESS_ID
+ENV AWS_ACCESS_KEY_ID=${ACCESS_ID}
+ARG ACCESS_KEY
+ENV AWS_SECRET_ACCESS_KEY=${ACCESS_KEY}
+ARG DATABASE_URL
+ENV DATABASE_URL=${DATABASE_URL}
 # Copy in your requirements file
 ADD requirements.txt /requirements.txt
 
@@ -39,13 +44,13 @@ ADD . /code/
 EXPOSE 8000
 
 # Add any custom, static environment variables needed by Django or your settings file here:
-#ENV DJANGO_SETTINGS_MODULE=mysite.settings.deploy
+ENV DJANGO_SETTINGS_MODULE=mysite.settings
 
 # uWSGI configuration (customize as needed):
 ENV UWSGI_VIRTUALENV=/venv UWSGI_WSGI_FILE=mysite/wsgi.py UWSGI_HTTP=:8000 UWSGI_MASTER=1 UWSGI_WORKERS=2 UWSGI_THREADS=8 UWSGI_UID=1000 UWSGI_GID=2000 UWSGI_LAZY_APPS=1 UWSGI_WSGI_ENV_BEHAVIOR=holy
 
 # Call collectstatic (customize the following line with the minimal environment variables needed for manage.py to run):
-RUN DATABASE_URL=postgres://app_user:changeme@db/app_db  /venv/bin/python manage.py collectstatic --noinput
+RUN  /venv/bin/python manage.py collectstatic --noinput
 
 # Start uWSGI
 ENTRYPOINT ["/code/docker-entrypoint.sh"]
